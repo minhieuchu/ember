@@ -1,4 +1,5 @@
 Rails.application.routes.draw do
+  resources :channels
   resources :users
 
   post "/login", to: "auth#login"

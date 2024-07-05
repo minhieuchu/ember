@@ -10,9 +10,15 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_01_055617) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_05_093946) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "channels", force: :cascade do |t|
+    t.string "name"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+  end
 
   create_table "users", force: :cascade do |t|
     t.string "name"
@@ -20,6 +26,13 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_01_055617) do
     t.string "password_digest"
     t.datetime "created_at", null: false
     t.datetime "updated_at", null: false
+  end
+
+  create_table "users_channels", id: false, force: :cascade do |t|
+    t.bigint "user_id"
+    t.bigint "channel_id"
+    t.index ["channel_id"], name: "index_users_channels_on_channel_id"
+    t.index ["user_id"], name: "index_users_channels_on_user_id"
   end
 
 end
