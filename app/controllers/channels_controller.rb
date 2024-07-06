@@ -3,14 +3,15 @@ class ChannelsController < ApplicationController
 
   # GET /channels
   def index
-    @channels = Channel.all
-
+    @channels = Channel.find_by_user_id(@current_user.id)
     render json: @channels
   end
 
   # GET /channels/1
   def show
-    render json: @channel
+    if @channel.users.any? { |user| user.id == @current_user.id }
+      render json: @channel
+    end
   end
 
   # POST /channels
@@ -39,13 +40,14 @@ class ChannelsController < ApplicationController
   end
 
   private
-    # Use callbacks to share common setup or constraints between actions.
-    def set_channel
-      @channel = Channel.find(params[:id])
-    end
 
-    # Only allow a list of trusted parameters through.
-    def channel_params
-      params.require(:channel).permit(:name)
-    end
+  # Use callbacks to share common setup or constraints between actions.
+  def set_channel
+    @channel = Channel.find(params[:id])
+  end
+
+  # Only allow a list of trusted parameters through.
+  def channel_params
+    params.require(:channel).permit(:name)
+  end
 end
