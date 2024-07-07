@@ -11,6 +11,7 @@
 User.destroy_all
 Channel.destroy_all
 DirectMessage.destroy_all
+ChannelMessage.destroy_all
 
 5.times do |index|
   User.create(name: "User #{index}", email: "email#{index}@gmail.com", password: "password")
@@ -38,4 +39,9 @@ User.all.each do |user|
       content: "Message between user #{first_user.id} and user #{user.id}",
     )
   end
+  ChannelMessage.create(
+    user_id: user.id,
+    channel_id: first_channel.id,
+    content: "Message from user #{user.id} to channel #{first_channel.id}",
+  )
 end
