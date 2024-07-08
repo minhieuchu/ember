@@ -1,6 +1,10 @@
 Rails.application.routes.draw do
   resources :channels
-  resources :users
+  resources :users, except: [:index] do
+    collection do
+      get "connected_users", to: "users#list_connected_users"
+    end
+  end
   resources :direct_messages, only: [:create, :update, :destroy] do
     collection do
       get "chat/:user_id", to: "direct_messages#chat"

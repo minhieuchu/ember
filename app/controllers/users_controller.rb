@@ -6,6 +6,21 @@ class UsersController < ApplicationController
     render json: @user
   end
 
+  # GET /connected_users
+  def list_connected_users
+    users_connections = UsersConnection.find_by_user @current_user.id
+    user_ids = users_connections.map do |connection|
+      if connection.user_a_id == @current_user.id
+        connection.user_b_id
+      else
+        connection.user_a_id
+      end
+    end
+
+    connected_users = User.where id: user_ids
+    render json: connected_users
+  end
+
   # POST /users
   def create
     @user = User.new(user_params)

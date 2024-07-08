@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.1].define(version: 2024_07_07_145727) do
+ActiveRecord::Schema[7.1].define(version: 2024_07_08_093817) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
 
@@ -51,4 +51,15 @@ ActiveRecord::Schema[7.1].define(version: 2024_07_07_145727) do
     t.index ["user_id"], name: "index_users_channels_on_user_id"
   end
 
+  create_table "users_connections", id: false, force: :cascade do |t|
+    t.bigint "user_a_id", null: false
+    t.bigint "user_b_id", null: false
+    t.index ["user_a_id", "user_b_id"], name: "index_users_connections_on_user_a_id_and_user_b_id", unique: true
+    t.index ["user_a_id"], name: "index_users_connections_on_user_a_id"
+    t.index ["user_b_id", "user_a_id"], name: "index_users_connections_on_user_b_id_and_user_a_id", unique: true
+    t.index ["user_b_id"], name: "index_users_connections_on_user_b_id"
+  end
+
+  add_foreign_key "users_connections", "users", column: "user_a_id"
+  add_foreign_key "users_connections", "users", column: "user_b_id"
 end
