@@ -7,7 +7,7 @@ class User < ApplicationRecord
   has_many :users_connections_a, class_name: :UsersConnection, foreign_key: "user_a_id"
   has_many :users_connections_b, class_name: :UsersConnection, foreign_key: "user_b_id"
 
-  scope :find_by_email, ->(email) { where(email: email).first }
+  scope :find_by_email, ->(email) { find_by(email: email) }
 
   def as_json(options = {})
     super(options.merge(except: [:password_digest, :created_at, :updated_at]))

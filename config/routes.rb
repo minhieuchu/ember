@@ -17,4 +17,5 @@ Rails.application.routes.draw do
   end
 
   post "/auth/login", to: "auth#login"
+  post "/auth/validate-token", to: "auth#validate_access_token"
 end
