@@ -30,5 +30,6 @@ module Ember
     config.api_only = true
     config.generators.assets = false
     config.generators.helper = false
+    config.middleware.use ActionDispatch::Cookies
   end
 end

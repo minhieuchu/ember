@@ -6,29 +6,30 @@ class AuthController < ApplicationController
     if login_user&.authenticate(params[:password])
       access_token = create_access_token(login_user.email)
       refresh_token = create_refresh_token(login_user.email)
-      render json: {
-               access_token: access_token,
-               refresh_token: refresh_token,
-               token_type: "bearer",
-             },
-             status: :ok
+      cookies[:access_token] = {
+        value: access_token,
+        httponly: true,
+        samesite: :strict,
+        expires: 1.day.from_now,
+      }
+      cookies[:refresh_token] = {
+        value: refresh_token,
+        httponly: true,
+        samesite: :strict,
+        expires: 1.week.from_now,
+      }
+      render json: { message: "Login successfully" }, status: :ok
     else
       render json: { error: "Unauthorized" }, status: :unauthorized
     end
   end
 
   def validate_access_token
-    decoded_token = decode(params[:token])
+    decoded_token = decode(cookies[:access_token])
     authenticate_user = User.find_by_email(decoded_token[:sub])
 
     if authenticate_user.nil? || decoded_token[:scope] != "access_token"
       render json: { error: "Invalid token" }
-      return
-    end
-
-    expire_time = Time.at(decoded_token[:exp])
-    if expire_time < Time.now
-      render json: { error: "Token has expired" }
       return
     end
 
@@ -38,10 +39,10 @@ class AuthController < ApplicationController
   private
 
   def create_access_token(email)
-    encode(sub: email, scope: "access_token", exp: 1.day.from_now.to_i)
+    encode(sub: email, scope: "access_token")
   end
 
   def create_refresh_token(email)
-    encode(sub: email, scope: "refresh_token", exp: 7.days.from_now.to_i)
+    encode(sub: email, scope: "refresh_token")
   end
 end

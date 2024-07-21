@@ -1,4 +1,5 @@
 class ApplicationController < ActionController::API
+  include ActionController::Cookies
   include JsonWebToken, ExceptionHandler
 
   before_action :authenticate_request
@@ -6,12 +7,16 @@ class ApplicationController < ActionController::API
   private
 
   def authenticate_request
-    authorization_header = request.headers["Authorization"]
-    token = authorization_header.split(" ").last if authorization_header
-    decoded_token = decode(token)
-    @current_user = User.find(decoded_token[:user_id]) if decoded_token.key?(:user_id)
-    if @current_user.nil?
+    token = cookies[:access_token]
+    if token.nil?
       render json: { error: "Unauthorized" }, status: :unauthorized
+      return
+    end
+
+    decoded_token = decode(token)
+    @current_user = User.find_by_email(decoded_token[:sub]) if decoded_token.key?(:sub)
+    if @current_user.nil?
+      render json: { error: "Invalid token" }, status: :unauthorized
     end
   end
 end
